@@ -16,35 +16,35 @@ import (
 )
 
 type Config struct {
-	Secret                       string            `json:"secret,omitempty"`
-	Optional                     bool              `json:"optional,omitempty"`
-	PayloadHeaders               map[string]string `json:"payloadHeaders,omitempty"`
-	AuthQueryParam               string            `json:"authQueryParam,omitempty"`
-	AuthCookieName               string            `json:"authCookieName,omitempty"`
-	ForwardAuth                  bool              `json:"forwardAuth,omitempty"`
+	Secret                        string            `json:"secret,omitempty"`
+	Optional                      bool              `json:"optional,omitempty"`
+	PayloadHeaders                map[string]string `json:"payloadHeaders,omitempty"`
+	AuthQueryParam                string            `json:"authQueryParam,omitempty"`
+	AuthCookieName                string            `json:"authCookieName,omitempty"`
+	ForwardAuth                   bool              `json:"forwardAuth,omitempty"`
 	AllowUnauthenticatedPreflight bool              `json:"allowUnauthenticatedPreflight,omitempty"`
 }
 
 func CreateConfig() *Config {
 	return &Config{
-		Secret:                       "SECRET",
-		Optional:                     false,
-		AuthQueryParam:               "authToken",
-		AuthCookieName:               "authToken",
-		ForwardAuth:                  false,
+		Secret:                        "SECRET",
+		Optional:                      false,
+		AuthQueryParam:                "authToken",
+		AuthCookieName:                "authToken",
+		ForwardAuth:                   false,
 		AllowUnauthenticatedPreflight: false,
 	}
 }
 
 type JWT struct {
-	next                         http.Handler
-	name                         string
-	secret                       string
-	optional                     bool
-	payloadHeaders               map[string]string
-	authQueryParam               string
-	authCookieName               string
-	forwardAuth                  bool
+	next                          http.Handler
+	name                          string
+	secret                        string
+	optional                      bool
+	payloadHeaders                map[string]string
+	authQueryParam                string
+	authCookieName                string
+	forwardAuth                   bool
 	allowUnauthenticatedPreflight bool
 }
 
@@ -56,23 +56,23 @@ type Token struct {
 
 func New(ctx context.Context, next http.Handler, config *Config, name string) (http.Handler, error) {
 	return &JWT{
-		next:                         next,
-		name:                         name,
-		secret:                       config.Secret,
-		optional:                     config.Optional,
-		payloadHeaders:               config.PayloadHeaders,
-		authQueryParam:               config.AuthQueryParam,
-		authCookieName:               config.AuthCookieName,
-		forwardAuth:                  config.ForwardAuth,
+		next:                          next,
+		name:                          name,
+		secret:                        config.Secret,
+		optional:                      config.Optional,
+		payloadHeaders:                config.PayloadHeaders,
+		authQueryParam:                config.AuthQueryParam,
+		authCookieName:                config.AuthCookieName,
+		forwardAuth:                   config.ForwardAuth,
 		allowUnauthenticatedPreflight: config.AllowUnauthenticatedPreflight,
 	}, nil
 }
 
 func (j *JWT) ServeHTTP(response http.ResponseWriter, request *http.Request) {
-    if (j.allowUnauthenticatedPreflight && request.Method == "OPTIONS") {
-        j.next.ServeHTTP(response, request)
-        return
-    }
+	if j.allowUnauthenticatedPreflight && request.Method == "OPTIONS" {
+		j.next.ServeHTTP(response, request)
+		return
+	}
 	token, err := j.ExtractToken(request)
 	if token == nil {
 		if err != nil {
