@@ -27,6 +27,7 @@ http:
           authQueryParam: authToken
           authCookieName: authToken
           forwardAuth: false
+          allowUnauthenticatedPreflight: false
 ```
 
 Use as docker-compose label  
